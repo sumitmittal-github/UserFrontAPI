@@ -15,14 +15,12 @@ public class CalculatorController {
     private CalculatorService calculatorService;
 
     @PostMapping("/add")
-    public String add(@ModelAttribute InputParams inputParams){
-        System.out.println("Entry CalculatorController.add with inputParams :"+inputParams);
-        return calculatorService.add(inputParams);
-    }
-
-    @PostMapping("/addAll")
-    public String addAll(@RequestBody List<Long> allInputParams){
-        System.out.println("Entry CalculatorController.addAll with inputParams :"+allInputParams);
-        return calculatorService.addAll(allInputParams);
+    public String add(@RequestBody List<Long> inputs){
+        System.out.println("Entry CalculatorController.add() ...");
+        System.out.println("inputs :"+inputs);
+        String response = calculatorService.add(inputs);
+        System.out.println("response : "+response);
+        System.out.println("Exit CalculatorController.add() !!!");
+        return response;
     }
 }
