@@ -45,21 +45,8 @@
 			<artifactId>spring-cloud-starter-aws-messaging</artifactId>
 		</dependency>
 
-
-		<!--		<dependency>
-                    <groupId>com.amazonaws</groupId>
-                    <artifactId>aws-java-sdk-core</artifactId>
-                    <version>1.12.240</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.amazonaws</groupId>
-                    <artifactId>aws-java-sdk-sqs</artifactId>
-                    <version>1.12.240</version>
-                </dependency>-->
-
-
 	</dependencies>
+
 
 	<dependencyManagement>
 		<dependencies>
@@ -72,6 +59,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
 
 	<build>
 		<plugins>

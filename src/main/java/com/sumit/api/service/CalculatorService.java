@@ -1,8 +1,7 @@
 package com.sumit.api.service;
 
-import com.sumit.api.entity.InputParams;
 import com.sumit.api.entity.OperationType;
-import com.sumit.api.entity.SQSMessage;
+import com.sumit.api.SQS.AmazonSQSMessage;
 import com.sumit.api.utils.InputValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,32 +17,31 @@ public class CalculatorService {
     @Autowired
     private InputValidator inputValidator;
 
-    @Autowired
-    private QueueMessagingTemplate queueMessagingTemplate;
-
     @Value("${cloud.aws.end-point.uri}")
     private String sqsQueueEndPoint;
 
-    public String add(List<Long> inputs) {
-        System.out.println("Entry CalculatorService.add() ...");
+    @Autowired
+    private QueueMessagingTemplate queueMessagingTemplate;
+
+    public String validateAndSendSQSMessage(List<Double> inputs, OperationType operationType) {
+        System.out.println("Entry CalculatorService.validateAndSendSQSMessage() ...");
         System.out.println("inputs :"+inputs);
+        System.out.println("operationType :"+operationType);
         System.out.println("sqsQueueEndPoint :"+sqsQueueEndPoint);
 
         // validate input params, if valid then proceed further, else send error response to caller
-        String validationMsg = inputValidator.validateAddAllInput(inputs);
+        String validationMsg = inputValidator.validateInputs(operationType, inputs);
         System.out.println("validationMsg :"+validationMsg);
         if(validationMsg != null)
-            return  validationMsg;
+            return validationMsg;
 
         // send message to Amazon SQS
-        SQSMessage sqsMessage = new SQSMessage(inputs, OperationType.ADD);
-        System.out.println("Sending message to SQS, sqsMessage : "+sqsMessage);
-        queueMessagingTemplate.send(sqsQueueEndPoint, MessageBuilder.withPayload(sqsMessage).build());
+        AmazonSQSMessage amazonSQSMessage = new AmazonSQSMessage(operationType, inputs);
+        System.out.println("Sending message to SQS, sqsMessage : "+amazonSQSMessage);
+        queueMessagingTemplate.send(sqsQueueEndPoint, MessageBuilder.withPayload(amazonSQSMessage).build());
         System.out.println("Message Sent to SQS!!");
-        System.out.println("Exit CalculatorService.add() !!!");
+        System.out.println("Exit CalculatorService.validateAndSendSQSMessage() !!!");
         return "Results sent for processing";
     }
-
-
 
 }
