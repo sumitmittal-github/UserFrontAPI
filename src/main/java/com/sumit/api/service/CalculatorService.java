@@ -3,7 +3,7 @@ package com.sumit.api.service;
 import com.sumit.api.entity.OperationType;
 import com.sumit.api.SQS.AmazonSQSMessage;
 import com.sumit.api.error.InvalidInputException;
-import com.sumit.api.utils.InputValidator;
+import com.sumit.api.utils.CalculatorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
@@ -16,7 +16,7 @@ import java.util.List;
 public class CalculatorService {
 
     @Autowired
-    private InputValidator inputValidator;
+    private CalculatorUtils calculatorUtils;
 
     @Value("${cloud.aws.end-point.uri}")
     private String sqsQueueEndPoint;
@@ -31,15 +31,16 @@ public class CalculatorService {
         System.out.println("sqsQueueEndPoint :"+sqsQueueEndPoint);
 
         // validate input params, if valid then proceed further, else send error response to caller
-        String validationMsg = inputValidator.validateInputs(operationType, inputs);
+        String validationMsg = calculatorUtils.validateInputs(operationType, inputs);
         System.out.println("validationMsg :"+validationMsg);
         if(validationMsg != null)
             return validationMsg;
 
         // send message to Amazon SQS
         AmazonSQSMessage amazonSQSMessage = new AmazonSQSMessage(operationType, inputs);
-        System.out.println("Sending message to SQS, sqsMessage : "+amazonSQSMessage);
-        queueMessagingTemplate.send(sqsQueueEndPoint, MessageBuilder.withPayload(amazonSQSMessage).build());
+        String amazonSQSMessageJson = calculatorUtils.parseAmazonSQSMessageObjectToJSON(amazonSQSMessage);
+        System.out.println("Sending JSON message to SQS : "+amazonSQSMessageJson);
+        queueMessagingTemplate.send(sqsQueueEndPoint, MessageBuilder.withPayload(amazonSQSMessageJson).build());
         System.out.println("Message Sent to SQS!!");
         System.out.println("Exit CalculatorService.validateAndSendSQSMessage() !!!");
         return "Results sent for processing";

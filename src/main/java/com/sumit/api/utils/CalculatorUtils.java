@@ -1,5 +1,7 @@
 package com.sumit.api.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sumit.api.SQS.AmazonSQSMessage;
 import com.sumit.api.error.InvalidInputException;
 import com.sumit.api.entity.OperationType;
 import org.springframework.stereotype.Component;
@@ -7,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class InputValidator {
+public class CalculatorUtils {
 
     /*
     Addition and Multiplication can have more than 2 argument
@@ -23,5 +25,20 @@ public class InputValidator {
             throw new InvalidInputException("In division 2nd number can not be 0 !!");
         else
             return null;
+    }
+
+    public String parseAmazonSQSMessageObjectToJSON(AmazonSQSMessage amazonSQSMessage) throws InvalidInputException {
+        System.out.println("Entry CalculatorUtils.parseAmazonSQSMessageObjectToJSON() ...");
+        String amazonSQSMessageJson = null;
+        try{
+            System.out.println("amazonSQSMessage object:"+amazonSQSMessage);
+            ObjectMapper objectMapper = new ObjectMapper();
+            amazonSQSMessageJson = objectMapper.writeValueAsString(amazonSQSMessage);
+            System.out.println("amazonSQSMessage JSON:"+amazonSQSMessageJson);
+        } catch(Exception e){
+            throw new InvalidInputException("Exception occurred while parsing SQS Object to JSON");
+        }
+        System.out.println("Exit CalculatorUtils.parseAmazonSQSMessageObjectToJSON() !!!");
+        return amazonSQSMessageJson;
     }
 }
