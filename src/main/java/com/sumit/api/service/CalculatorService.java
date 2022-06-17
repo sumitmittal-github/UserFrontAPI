@@ -2,6 +2,7 @@ package com.sumit.api.service;
 
 import com.sumit.api.entity.OperationType;
 import com.sumit.api.SQS.AmazonSQSMessage;
+import com.sumit.api.error.InvalidInputException;
 import com.sumit.api.utils.InputValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +24,7 @@ public class CalculatorService {
     @Autowired
     private QueueMessagingTemplate queueMessagingTemplate;
 
-    public String validateAndSendSQSMessage(List<Double> inputs, OperationType operationType) {
+    public String validateAndSendSQSMessage(List<Double> inputs, OperationType operationType) throws InvalidInputException {
         System.out.println("Entry CalculatorService.validateAndSendSQSMessage() ...");
         System.out.println("inputs :"+inputs);
         System.out.println("operationType :"+operationType);
